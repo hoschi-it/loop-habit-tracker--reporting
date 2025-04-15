@@ -1,9 +1,37 @@
-#!/usr/bin/env nix-shell
-#! nix-shell -p python311 python311Packages.pandas
-#! nix-shell -i python3
+#!/usr/bin/env python3
+
+# reference: https://pandas.pydata.org/docs/reference/index.html
+import pandas as pd
+import datetime
+
+config = {
+    "last_n_days": 30,
+}
+
+
+def minimum_date():
+    return pd.Timestamp.today() - pd.Timedelta(config.last_n_days, 'd')
+
 
 def main():
-    ...
+    df = pd.read_csv(
+        './example-data.d/Checkmarks.csv',
+        index_col=0
+    )
+
+    df = df.replace(to_replace={
+        -1: "❌",
+        2: "✅",
+        1: "☐",
+    })
+
+    # XXX work in progress
+    # print(
+    #     df.filter(
+    #       axis='index',
+    #     )
+    # )
+    # df.to_csv('built.csv')
 
 
 main()
