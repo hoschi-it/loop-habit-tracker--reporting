@@ -9,8 +9,11 @@ config = {
 }
 
 
-def minimum_date():
-    return pd.Timestamp.today() - pd.Timedelta(config.last_n_days, 'd')
+def dates():
+    today = pd.Timestamp.today().date()
+    # TODO should input be a range or a date?
+    oldest = today - pd.Timedelta(config['last_n_days'], 'd')
+    return pd.date_range(start=oldest, end=today, normalize=True)
 
 
 def main():
@@ -19,6 +22,8 @@ def main():
         index_col=0
     )
 
+    df.index = pd.to_datetime(df.index)
+
     df = df.replace(to_replace={
         -1: "❌",
         2: "✅",
@@ -26,12 +31,9 @@ def main():
     })
 
     # XXX work in progress
-    # print(
-    #     df.filter(
-    #       axis='index',
-    #     )
-    # )
-    # df.to_csv('built/dev.csv')
+    df = df.loc[dates()]
+    # df = df.head(config["last_n_days"])
+    df.to_csv('built/dev.csv')
 
 
 main()
