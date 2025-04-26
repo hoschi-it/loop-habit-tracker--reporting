@@ -58,7 +58,10 @@ def main():
         1: "☐",
     })
 
-    df = df.loc[dates()]
+    try:
+        df = df.loc[dates()]
+    except KeyError:
+        print("Not all past days exist in the exported file. Continuing anyway.")
 
     html = prettify(df)
 
