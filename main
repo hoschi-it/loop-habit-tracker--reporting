@@ -6,6 +6,7 @@ import datetime
 
 config = {
     "last_n_days": 30,
+    "output_file": "./built/dev1.html",
 }
 
 
@@ -66,7 +67,7 @@ def main():
     html = prettify(df)
 
     # XXX work in progress
-    with open('built/dev1.html', 'w') as file:
+    with open(config["output_file"], 'w') as file:
         file.write(html)
 
 
