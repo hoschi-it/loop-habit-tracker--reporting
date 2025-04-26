@@ -21,9 +21,18 @@ def prettify(df):
     html_table = df.to_html()
     title = "Report of Loop Habit Tracker"
     style = '''
+      body {
+        font-family: sans-serif;
+      }
+      table {
+        border-collapse: collapse;
+      }
       thead {
         top: 0;
         background-color: dark-cyan
+      }
+      td, th {
+        text-align: center;
       }
     '''
     html = f'''
