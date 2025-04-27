@@ -60,7 +60,7 @@ def main():
         index_col=0
     )
 
-    df.index = pd.to_datetime(df.index).strftime('%d.%b.')
+    df.index = pd.to_datetime(df.index)
 
     df = df.replace(to_replace={
         -1: "❌",
@@ -73,6 +73,8 @@ def main():
         df = df.loc[dates()]
     except KeyError:
         print("Not all past days exist in the exported file. Continuing anyway.")
+
+    df.index = df.index.strftime('%a %d. %b')
 
     html = prettify(df.T)
 
