@@ -64,8 +64,9 @@ def main():
 
     df = df.replace(to_replace={
         -1: "❌",
+        0: "?",
         2: "✅",
-        1: "☐",
+        1: "🆗",
     })
 
     try:
