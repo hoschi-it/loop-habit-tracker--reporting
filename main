@@ -74,6 +74,8 @@ def main():
     except KeyError:
         print("Not all past days exist in the exported file. Continuing anyway.")
 
+    df = df.drop(labels=["🛁 Haare waschen🔒", "🗓️📸 Kalender geteilt🔒"],
+                 axis='columns')
     df = df.sort_index(ascending=False)
     df.index = df.index.strftime('%a %d. %b')
     df = df.map(func=scale_down_numeric_values, na_action='ignore')
