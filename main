@@ -18,6 +18,12 @@ def dates():
     return pd.date_range(start=oldest, end=today, normalize=True)
 
 
+def scale_down_numeric_values(cell_value):
+    if (type(cell_value) == int and cell_value > 10):
+        return cell_value / 1000.0
+    return cell_value
+
+
 def prettify(df):
     html_table = df.to_html()
     title = "Report of Loop Habit Tracker"
@@ -57,10 +63,10 @@ def main():
     df.index = pd.to_datetime(df.index)
 
     df = df.replace(to_replace={
-        -1: "❌",
-        0: "?",
-        2: "✅",
+        -1: "❔",
+        0: "❌​",
         1: "🆗",
+        2: "✅",
     })
 
     try:
@@ -68,7 +74,9 @@ def main():
     except KeyError:
         print("Not all past days exist in the exported file. Continuing anyway.")
 
+    df = df.sort_index(ascending=False)
     df.index = df.index.strftime('%a %d. %b')
+    df = df.map(func=scale_down_numeric_values, na_action='ignore')
 
     html = prettify(df.T)
 
