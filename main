@@ -7,6 +7,7 @@ import datetime
 config = {
     "last_n_days": 30,
     "output_file": "./built/dev1.html",
+    "is_dev_mode": True,
 }
 
 
@@ -20,21 +21,14 @@ def dates():
 def prettify(df):
     html_table = df.to_html()
     title = "Report of Loop Habit Tracker"
-    style = '''
-      body {
-        font-family: sans-serif;
-      }
-      table {
-        border-collapse: collapse;
-      }
-      thead {
-        top: 0;
-        background-color: dark-cyan
-      }
-      td, th {
-        text-align: center;
-      }
-    '''
+    style = ""
+
+    if (not config["is_dev_mode"]):
+        with open('./style.css') as stylesheet:
+            style = f'<style>{ stylesheet.read() }</style>'
+    else:
+        style = f'<link rel="stylesheet" type="text/css" href="../style.css">'
+
     html = f'''
 <!DOCTYPE html>
 <html>
@@ -42,7 +36,7 @@ def prettify(df):
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{title}</title>
-  <style>{style}</style>
+  {style}
 </head>
 <body>
   <h1>{title}</h1>

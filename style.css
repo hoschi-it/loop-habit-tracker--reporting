@@ -1,0 +1,22 @@
+body {
+  font-family: sans-serif;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+thead {
+  top: 0;
+  background-color: dark-cyan;
+}
+
+th {
+  padding: 0.5em;
+}
+
+table td,
+table th {
+  text-align: center;
+  border-color: rgba(124, 124, 124, 0.5);
+}
