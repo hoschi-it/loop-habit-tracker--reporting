@@ -8,6 +8,7 @@ config = {
     "last_n_days": 30,
     "output_file": "./built/dev1.html",
     "is_dev_mode": True,
+    "input_zip": "./example-data.d/csv.zip"
 }
 
 
@@ -55,8 +56,11 @@ def prettify(df):
 
 
 def main():
+    CSV_DIR = "./built"
+
+    extract_csv_from_zip(CSV_DIR)
     df = pd.read_csv(
-        './example-data.d/Checkmarks.csv',
+        f'{CSV_DIR}/Checkmarks.csv',
         index_col=0
     )
 
@@ -85,6 +89,13 @@ def main():
     # XXX work in progress
     with open(config["output_file"], 'w') as file:
         file.write(html)
+
+
+def extract_csv_from_zip(target_dir='./built'):
+    import zipfile
+    with zipfile.ZipFile(config["input_zip"], 'r') as zip_ref:
+        zip_ref.extract(member='Checkmarks.csv',
+                        path=target_dir)
 
 
 main()
