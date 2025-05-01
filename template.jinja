@@ -17,6 +17,16 @@
 <body>
   <h1>{{title}}</h1>
   <main>{{html_table}}</main>
+  <footer>
+  <h3>
+  Legend
+  </h3>
+  <ul>
+  {% for a, b in legend.items() %}
+    <li>{{ a }}: {{ b }}</li>
+  {% endfor %}
+  </ul>
+  </footer>
 </body>
 
 </html>
