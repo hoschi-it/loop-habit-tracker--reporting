@@ -8,7 +8,29 @@ config = {
     "last_n_days": 30,
     "output_file": "./built/dev1.html",
     "is_dev_mode": True,
-    "input_zip": "./example-data.d/csv.zip"
+    "input_zip": "./example-data.d/csv.zip",
+    "cell_values": [
+        {
+            "original": -1,
+            "replacement": '❔',
+            "legend": "Forgot to track it.",
+        },
+        {
+            "original": 0,
+            "replacement": "❌",
+            "legend": "Expectation remained unfullfiled.",
+        },
+        {
+            "original": 1,
+            "replacement": '🆗',
+            "legend": "Did a regular break.",
+        },
+        {
+            "original": 2,
+            "replacement": '✅',
+            "legend": "Performed today 💪",
+        }
+    ],
 }
 
 
@@ -67,10 +89,7 @@ def main():
     df.index = pd.to_datetime(df.index)
 
     df = df.replace(to_replace={
-        -1: "❔",
-        0: "❌​",
-        1: "🆗",
-        2: "✅",
+        item["original"]: item["replacement"] for item in config["cell_values"]
     })
 
     try:
