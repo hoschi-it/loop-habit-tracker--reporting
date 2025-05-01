@@ -3,6 +3,7 @@
 # reference: https://pandas.pydata.org/docs/reference/index.html
 import pandas as pd
 import datetime
+from jinja2 import Environment, FileSystemLoader
 
 config = {
     "last_n_days": 30,
@@ -49,7 +50,6 @@ def scale_down_numeric_values(cell_value):
 
 def prettify(df):
     html_table = df.to_html()
-    title = "Report of Loop Habit Tracker"
     style = ""
 
     if (not config["is_dev_mode"]):
@@ -58,21 +58,15 @@ def prettify(df):
     else:
         style = f'<link rel="stylesheet" type="text/css" href="../style.css">'
 
-    html = f'''
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{title}</title>
-  {style}
-</head>
-<body>
-  <h1>{title}</h1>
-  <main>{html_table}</main>
-</body>
-</html>
-    '''
+    env = Environment(
+        loader=FileSystemLoader(searchpath='./')
+    )
+    template = env.get_template('template.jinja')
+    html = template.render(
+        title="Report of Loop Habit Tracker",
+        style=style,
+        html_table=html_table,
+    )
 
     return html
 
