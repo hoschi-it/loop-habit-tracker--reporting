@@ -8,7 +8,7 @@ from jinja2 import Environment, FileSystemLoader
 config = {
     "last_n_days": 30,
     "output_file": "./built/dev1.html",
-    "is_dev_mode": True,
+    "is_dev_mode": False,
     "input_zip": "./example-data.d/csv.zip",
     "cell_values": [
         {
@@ -50,21 +50,14 @@ def scale_down_numeric_values(cell_value):
 
 def prettify(df):
     html_table = df.to_html()
-    style = ""
-
-    if (not config["is_dev_mode"]):
-        with open('./style.css') as stylesheet:
-            style = f'<style>{ stylesheet.read() }</style>'
-    else:
-        style = f'<link rel="stylesheet" type="text/css" href="../style.css">'
 
     env = Environment(
         loader=FileSystemLoader(searchpath='./')
     )
     template = env.get_template('template.jinja')
     html = template.render(
+        is_dev_mode=config["is_dev_mode"],
         title="Report of Loop Habit Tracker",
-        style=style,
         html_table=html_table,
     )
 
