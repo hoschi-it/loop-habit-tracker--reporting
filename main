@@ -65,6 +65,14 @@ def prettify(df):
     return html
 
 
+def filter_dates(df):
+    try:
+        df = df.loc[dates()]
+    except KeyError:
+        print("Not all past days exist in the exported file. Continuing anyway.")
+    return df
+
+
 def main():
     CSV_DIR = "./built"
 
@@ -75,15 +83,11 @@ def main():
     )
 
     df.index = pd.to_datetime(df.index)
+    df = filter_dates(df)
 
     df = df.replace(to_replace={
         item["original"]: item["replacement"] for item in config["cell_values"]
     })
-
-    try:
-        df = df.loc[dates()]
-    except KeyError:
-        print("Not all past days exist in the exported file. Continuing anyway.")
 
     df = df.drop(labels=["🛁 Haare waschen🔒", "🗓️📸 Kalender geteilt🔒"],
                  axis='columns')
