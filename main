@@ -36,7 +36,7 @@ config = {
 }
 
 
-def dates():
+def date_range():
     today = pd.Timestamp.today().date()
     # TODO should input be a range or a date?
     oldest = today - pd.Timedelta(config['last_n_days'], 'd')
@@ -68,10 +68,10 @@ def prettify(df):
 
 
 def filter_dates(df):
-    try:
-        df = df.loc[dates()]
-    except KeyError:
-        print("Not all past days exist in the exported file. Continuing anyway.")
+    existing_indices_in_range = [
+        date for date in date_range() if date in df.index
+    ]
+    df = df.loc[existing_indices_in_range]
     return df
 
 
