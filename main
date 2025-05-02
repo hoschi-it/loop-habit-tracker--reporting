@@ -73,6 +73,16 @@ def filter_dates(df):
     return df
 
 
+def numeric_to_symbolic(df):
+    df = df.replace(to_replace={
+        item["original"]: item["replacement"] for item in config["cell_values"]
+    })
+
+    df.index = df.index.strftime('%a %d. %b')
+    df = df.map(func=scale_down_numeric_values, na_action='ignore')
+    return df
+
+
 def main():
     CSV_DIR = "./built"
 
@@ -85,15 +95,10 @@ def main():
     df.index = pd.to_datetime(df.index)
     df = filter_dates(df)
 
-    df = df.replace(to_replace={
-        item["original"]: item["replacement"] for item in config["cell_values"]
-    })
-
     df = df.drop(labels=["🛁 Haare waschen🔒", "🗓️📸 Kalender geteilt🔒"],
                  axis='columns')
+    df = numeric_to_symbolic(df)
     df = df.sort_index(ascending=False)
-    df.index = df.index.strftime('%a %d. %b')
-    df = df.map(func=scale_down_numeric_values, na_action='ignore')
 
     html = prettify(df.T)
 
