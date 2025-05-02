@@ -1,0 +1,4 @@
+x add legend
+x auto extract from zip file
+allow passing loop habit export file as cli parameter
+drop empty row
