@@ -59,7 +59,8 @@ def prettify(df):
         is_dev_mode=config["is_dev_mode"],
         title="Report of Loop Habit Tracker",
         html_table=html_table,
-        legend={ value["replacement"]: value["legend"] for value in config["cell_values"]}
+        legend={value["replacement"]: value["legend"]
+                for value in config["cell_values"]}
     )
 
     return html
