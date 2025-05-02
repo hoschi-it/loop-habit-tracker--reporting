@@ -10,6 +10,7 @@ config = {
     "output_file": "./built/dev1.html",
     "is_dev_mode": False,
     "input_zip": "./example-data.d/csv.zip",
+    "habits_blacklist": ["🛁 Haare waschen🔒", "🗓️📸 Kalender geteilt🔒"],
     "cell_values": [
         {
             "original": -1,
@@ -96,8 +97,10 @@ def main():
     df.index = pd.to_datetime(df.index)
     df = filter_dates(df)
 
-    df = df.drop(labels=["🛁 Haare waschen🔒", "🗓️📸 Kalender geteilt🔒"],
-                 axis='columns')
+    df = df.drop(
+        labels=config["habits_blacklist"],
+        axis='columns'
+    )
     df = numeric_to_symbolic(df)
     df = df.sort_index(ascending=False)
 
