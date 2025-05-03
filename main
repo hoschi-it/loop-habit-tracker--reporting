@@ -80,7 +80,7 @@ def numeric_to_symbolic(df):
         item["original"]: item["replacement"] for item in config["cell_values"]
     })
 
-    df.index = df.index.strftime('%a %d. %b')
+    df.index = df.index.strftime('%d.%b. %a')
     df = df.map(func=scale_down_numeric_values, na_action='ignore')
     return df
 
