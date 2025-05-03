@@ -1,0 +1,20 @@
+last_n_days: 30
+output_file: ./built/dev1.html
+is_dev_mode: False
+input_zip: ./example-data.d/csv.zip
+habits_blacklist:
+  - "🛁 Haare waschen🔒"
+  - "🗓️📸 Kalender geteilt🔒"
+cell_values:
+  - original: -1
+    replacement: '❔'
+    legend: Forgot to track it.
+  - original: 0
+    replacement: "❌"
+    legend: Expectation remained unfullfiled.
+  - original: 1
+    replacement: '🆗'
+    legend: Did a regular break.
+  - original: 2
+    replacement: '✅'
+    legend: Performed today 💪

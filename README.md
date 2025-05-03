@@ -14,3 +14,14 @@ given they have been tracked via [Loop Habit Tracker][]
 [Loop Habit Tracker]: https://github.com/iSoron/uhabits
 [Tracker Playstore]: https://play.google.com/store/apps/details?id=org.isoron.uhabits
 [Tracker Fdroid]: https://f-droid.org/app/org.isoron.uhabits
+
+
+## Configuration 
+Adapt the `config.yaml` file to your needs.
+
+## Usage
+using nix for dependency management:
+```
+$ nix-shell
+$ ./main
+```

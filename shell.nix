@@ -4,5 +4,6 @@ pkgs.mkShell {
     pkgs.python311
     pkgs.python311Packages.pandas
     pkgs.python311Packages.jinja2
+    pkgs.python311Packages.strictyaml
   ];
 }

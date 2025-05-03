@@ -4,36 +4,25 @@
 import pandas as pd
 import datetime
 from jinja2 import Environment, FileSystemLoader
+from strictyaml import load, Map, Int, Bool, Str, Seq
 
-config = {
-    "last_n_days": 30,
-    "output_file": "./built/dev1.html",
-    "is_dev_mode": False,
-    "input_zip": "./example-data.d/csv.zip",
-    "habits_blacklist": ["🛁 Haare waschen🔒", "🗓️📸 Kalender geteilt🔒"],
-    "cell_values": [
-        {
-            "original": -1,
-            "replacement": '❔',
-            "legend": "Forgot to track it.",
-        },
-        {
-            "original": 0,
-            "replacement": "❌",
-            "legend": "Expectation remained unfullfiled.",
-        },
-        {
-            "original": 1,
-            "replacement": '🆗',
-            "legend": "Did a regular break.",
-        },
-        {
-            "original": 2,
-            "replacement": '✅',
-            "legend": "Performed today 💪",
-        }
-    ],
-}
+config_schema = Map({
+    "last_n_days": Int(),
+    "output_file": Str(),
+    "is_dev_mode": Bool(),
+    "input_zip": Str(),
+    "habits_blacklist": Seq(Str()),
+    "cell_values": Seq(Map({
+        "original": Int(),
+        "replacement": Str(),
+        "legend": Str(),
+    })),
+})
+config = {}
+
+def parse_config_file(path):
+    with open(path, 'r') as config_file:
+        config = load(config_file.read(), config_schema).data
 
 
 def date_range():
@@ -88,6 +77,7 @@ def numeric_to_symbolic(df):
 def main():
     CSV_DIR = "./built"
 
+    parse_config_file('./config.yaml')
     extract_csv_from_zip(CSV_DIR)
     df = pd.read_csv(
         f'{CSV_DIR}/Checkmarks.csv',
