@@ -4,12 +4,12 @@
 import pandas as pd
 import datetime
 from jinja2 import Environment, FileSystemLoader
+import sys
 
 config = {
     "last_n_days": 30,
     "output_file": "./built/dev1.html",
     "is_dev_mode": False,
-    "input_zip": "./example-data.d/csv.zip",
     "blacklist_habits_containing": ["🔒", "✅"],
     "cell_values": [
         {
@@ -87,6 +87,12 @@ def numeric_to_symbolic(df):
 
 def main():
     CSV_DIR = "./built"
+
+    # Require input_zip path as a mandatory CLI argument
+    if len(sys.argv) < 2:
+        print(f"Usage: {sys.argv[0]} <path/to/file.zip>")
+        sys.exit(1)
+    config["input_zip"] = sys.argv[1]
 
     extract_csv_from_zip(CSV_DIR)
     df = pd.read_csv(
