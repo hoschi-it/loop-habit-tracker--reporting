@@ -94,6 +94,9 @@ def main():
         index_col=0
     )
 
+    # Drop columns that are completely empty
+    df = df.dropna(axis='columns', how='all')
+
     df.index = pd.to_datetime(df.index)
     df = filter_dates(df)
 
