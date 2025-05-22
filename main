@@ -10,7 +10,7 @@ config = {
     "output_file": "./built/dev1.html",
     "is_dev_mode": False,
     "input_zip": "./example-data.d/csv.zip",
-    "habits_blacklist": ["🛁 Haare waschen🔒", "🗓️📸 Kalender geteilt🔒"],
+    "blacklist_habits_containing": ["🔒", "✅"],
     "cell_values": [
         {
             "original": -1,
@@ -97,10 +97,11 @@ def main():
     df.index = pd.to_datetime(df.index)
     df = filter_dates(df)
 
-    df = df.drop(
-        labels=config["habits_blacklist"],
-        axis='columns'
-    )
+    # Drop columns whose name contains any blacklisted substring
+    blacklist = config["blacklist_habits_containing"]
+    cols_to_drop = [col for col in df.columns if any(b in col for b in blacklist)]
+    df = df.drop(labels=cols_to_drop, axis='columns')
+
     df = numeric_to_symbolic(df)
     df = df.sort_index(ascending=False)
 
