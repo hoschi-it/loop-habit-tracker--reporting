@@ -4,6 +4,7 @@
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader
 import sys
+import locale
 
 config = {
     "last_n_days": 30,
@@ -74,14 +75,34 @@ def filter_dates(df):
     return df
 
 
-def numeric_to_symbolic(df):
-    df = df.replace(to_replace={
-        item["original"]: item["replacement"] for item in config["cell_values"]
-    })
-
+# Format dates in the DataFrame index to a more readable format
+def format_dates(df):
+    previous_locale = locale.getlocale(locale.LC_CTYPE)
+    set_locale('de_DE.UTF-8')
     df.index = df.index.strftime('%a %d.%m.')
-    df = df.map(func=scale_down_numeric_values, na_action='ignore')
+    set_locale(previous_locale)
     return df
+
+
+def replace_by_configured_symbols(df):
+    df.replace(to_replace={
+        item["original"]: item["replacement"] for item in config["cell_values"]
+    }, inplace=True)
+
+
+# Convert numeric values to more intuitive symbolic representations
+def numeric_to_symbolic(df):
+    replace_by_configured_symbols(df)
+    format_dates(df)
+    df = df.map(func=scale_down_numeric_value, na_action='ignore')
+    return df
+    
+
+def set_locale(locale_name):
+    try:
+        locale.setlocale(locale.LC_ALL, locale_name)
+    except locale.Error:
+        print(f"Warning: Locale '{locale_name}' not supported. Skipping locale setting.")
 
 
 def main():
@@ -100,7 +121,7 @@ def main():
     )
 
     # Drop columns that are completely empty
-    df = df.dropna(axis='columns', how='all')
+    df.dropna(axis='columns', how='all', inplace=True)
 
     df.index = pd.to_datetime(df.index)
     df = filter_dates(df)
