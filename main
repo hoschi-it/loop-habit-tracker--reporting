@@ -43,10 +43,12 @@ def date_range():
     return pd.date_range(start=oldest, end=today, normalize=True)
 
 
-def scale_down_numeric_values(cell_value):
-    if (type(cell_value) == int and cell_value > 10):
-        return cell_value / 1000.0
-    return cell_value
+# Loop Habit Tracker represents numeric values as by a factor of 1000.
+# cell_value: Needs not to have a numeric value that represents a non-numeric state.
+def scale_down_numeric_value(cell_value):
+    if type(cell_value) == str: return cell_value
+    assert (type(cell_value) == int and cell_value > 10), f"Invalid cell value: {cell_value}."
+    return cell_value / 1000.0
 
 
 def prettify(df):
