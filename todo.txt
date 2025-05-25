@@ -2,3 +2,4 @@ x add legend
 x auto extract from zip file
 x allow passing loop habit export file as cli parameter
 x drop empty row
+allow passing date range as cli parameter
