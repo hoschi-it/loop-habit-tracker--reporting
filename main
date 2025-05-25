@@ -12,7 +12,7 @@ config_schema = Map({
     "output_file": Str(),
     "is_dev_mode": Bool(),
     "input_zip": Str(),
-    "habits_blacklist": Seq(Str()),
+    "blacklist_habits_containing": Seq(Str()),
     "cell_values": Seq(Map({
         "original": Int(),
         "replacement": Str(),
@@ -23,6 +23,7 @@ config = {}
 
 
 def parse_config_file(path):
+    global config
     with open(path, 'r') as config_file:
         config = load(config_file.read(), config_schema).data
 
@@ -102,6 +103,7 @@ def main():
     CSV_DIR = "./built"
 
     parse_config_file('./config.yaml')
+
     # Require input_zip path as a mandatory CLI argument
     if len(sys.argv) < 2:
         print(f"Usage: {sys.argv[0]} <path/to/file.zip>")
