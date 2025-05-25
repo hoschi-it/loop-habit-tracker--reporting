@@ -2,8 +2,9 @@
 
 # reference: https://pandas.pydata.org/docs/reference/index.html
 import pandas as pd
-import datetime
 from jinja2 import Environment, FileSystemLoader
+import sys
+import locale
 from strictyaml import load, Map, Int, Bool, Str, Seq
 
 config_schema = Map({
@@ -20,6 +21,7 @@ config_schema = Map({
 })
 config = {}
 
+
 def parse_config_file(path):
     with open(path, 'r') as config_file:
         config = load(config_file.read(), config_schema).data
@@ -32,10 +34,12 @@ def date_range():
     return pd.date_range(start=oldest, end=today, normalize=True)
 
 
-def scale_down_numeric_values(cell_value):
-    if (type(cell_value) == int and cell_value > 10):
-        return cell_value / 1000.0
-    return cell_value
+# Loop Habit Tracker represents numeric values as by a factor of 1000.
+# cell_value: Needs not to have a numeric value that represents a non-numeric state.
+def scale_down_numeric_value(cell_value):
+    if type(cell_value) == str: return cell_value
+    assert (type(cell_value) == int and cell_value > 10), f"Invalid cell value: {cell_value}."
+    return cell_value / 1000.0
 
 
 def prettify(df):
@@ -64,35 +68,65 @@ def filter_dates(df):
     return df
 
 
-def numeric_to_symbolic(df):
-    df = df.replace(to_replace={
-        item["original"]: item["replacement"] for item in config["cell_values"]
-    })
-
-    df.index = df.index.strftime('%d.%b. %a')
-    df = df.map(func=scale_down_numeric_values, na_action='ignore')
+# Format dates in the DataFrame index to a more readable format
+def format_dates(df):
+    previous_locale = locale.getlocale(locale.LC_CTYPE)
+    set_locale('de_DE.UTF-8')
+    df.index = df.index.strftime('%a %d.%m.')
+    set_locale(previous_locale)
     return df
+
+
+def replace_by_configured_symbols(df):
+    df.replace(to_replace={
+        item["original"]: item["replacement"] for item in config["cell_values"]
+    }, inplace=True)
+
+
+# Convert numeric values to more intuitive symbolic representations
+def numeric_to_symbolic(df):
+    replace_by_configured_symbols(df)
+    format_dates(df)
+    df = df.map(func=scale_down_numeric_value, na_action='ignore')
+    return df
+
+
+def set_locale(locale_name):
+    try:
+        locale.setlocale(locale.LC_ALL, locale_name)
+    except locale.Error:
+        print(f"Warning: Locale '{locale_name}' not supported. Skipping locale setting.")
 
 
 def main():
     CSV_DIR = "./built"
 
     parse_config_file('./config.yaml')
+    # Require input_zip path as a mandatory CLI argument
+    if len(sys.argv) < 2:
+        print(f"Usage: {sys.argv[0]} <path/to/file.zip>")
+        sys.exit(1)
+    config["input_zip"] = sys.argv[1]
+
     extract_csv_from_zip(CSV_DIR)
     df = pd.read_csv(
         f'{CSV_DIR}/Checkmarks.csv',
         index_col=0
     )
 
+    # Drop columns that are completely empty
+    df.dropna(axis='columns', how='all', inplace=True)
+
     df.index = pd.to_datetime(df.index)
     df = filter_dates(df)
 
-    df = df.drop(
-        labels=config["habits_blacklist"],
-        axis='columns'
-    )
-    df = numeric_to_symbolic(df)
+    # Drop columns whose name contains any blacklisted substring
+    blacklist = config["blacklist_habits_containing"]
+    cols_to_drop = [col for col in df.columns if any(b in col for b in blacklist)]
+    df = df.drop(labels=cols_to_drop, axis='columns')
+
     df = df.sort_index(ascending=False)
+    df = numeric_to_symbolic(df)
 
     html = prettify(df.T)
 
