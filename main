@@ -78,7 +78,6 @@ def filter_dates(df):
 
 
 # Format dates in the DataFrame index to a more readable format
-# TODO: test on a system with a different locale
 def format_dates(df):
     previous_locale = locale.getlocale(locale.LC_CTYPE)
     set_locale('de_DE.UTF-8')
@@ -99,7 +98,7 @@ def numeric_to_symbolic(df):
     format_dates(df)
     df = df.map(func=scale_down_numeric_value, na_action='ignore')
     return df
-    
+
 
 def set_locale(locale_name):
     try:
